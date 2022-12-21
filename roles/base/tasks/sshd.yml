@@ -1,0 +1,10 @@
+---
+- name: roles/base/tasks/sshd.yml
+  set_fact: dummy=0
+
+- name: Disable reverse dns lookup
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regex: ^GSSAPIAuthentication
+    line: GSSAPIAuthentication no
+  become: yes

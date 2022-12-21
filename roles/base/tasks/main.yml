@@ -1,0 +1,38 @@
+# Basic Congiguration Control
+---
+- name: roles/base/tasks/main.yml
+  set_fact: dummy=0
+
+- import_tasks: powertools.yml
+  tags: pt
+
+- name: Check if hosts exists
+  stat: 
+    path: /etc/ansible/hosts
+  register: etc_ansible_hosts
+
+- name: Check if xdebug is enabled
+  shell: php -i | grep xdebug.log
+  register: xdebug
+  ignore_errors: yes
+
+# - debug:
+#     var: xdebug
+
+- fail:
+    msg: Disable Xdebug(zend_extension=xdebug.so) then re-run.
+  when: xdebug.rc == 0
+
+- import_tasks: mandatory.yml
+- import_tasks: time.yml
+- import_tasks: prompt.yml
+- import_tasks: selinux.yml
+- import_tasks: joe.yml
+- import_tasks: sshd.yml
+
+- name: Run and enable firewalld
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+  become: yes

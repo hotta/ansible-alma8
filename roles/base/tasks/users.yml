@@ -1,0 +1,30 @@
+# Make sure the user running ansible belongs to wheel group 
+---
+- name: roles/base/tasks/users.yml
+  set_fact: dummy=0
+
+- name: Create group wheel if not exists
+  group:
+    name: wheel
+    state: present
+  become: yes
+
+- name: Make "{{ ansible_user_id }}" belongs to wheel
+  user:
+    name: "{{ ansible_user_id }}" 
+    append: yes
+    groups: wheel
+  become: yes
+
+- name: get the hash of root password
+  set_fact:
+    HASHED_PASSWORD: "{{ LINUX_ROOT_PASSWORD | password_hash('sha512', 'mysalt') }}"
+  tags: root_password
+
+# - name: change root password
+#   user:
+#     name: root
+#     local: yes
+#     password: "{{ HASHED_PASSWORD }}"
+#   become: yes
+#   tags: root_password

@@ -1,0 +1,7 @@
+---
+- name: roles/base/tasks/prompt.yml
+  set_fact: dummy=0
+
+- name: Deploy bash_prompt.sh
+  copy: src=bash_prompt.sh dest=/etc/profile.d
+  become: yes

@@ -1,0 +1,64 @@
+# ------------- Common Settings -------------
+_V:                 "{{ ansible_distribution_major_version }}"
+TIME_ZONE:          'Asia/Tokyo'
+SERVER_IP:          '127.0.0.1'
+TIME_SERVER:        'ntp.nict.jp'
+# ----------------- PHP ---------------------
+PHP_REMI_REPO_URL:  'https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
+PHP_STREAM:         'remi-8.2'
+PHP_MEMORY_LIMIT:   '1G'
+# ---------------  MQTT(mqosquitto) ---------------------
+MQTT_BROKER_ADDR:       '127.0.0.1'
+MQTT_BROKER_PORT:       1883
+MQTT_BROKER_USER:       ''
+MQTT_BROKER_PASSWORD:   ''
+MQTT_RESWAIT_TIMER:     10000
+MOSQUITTO_PID_FILE:   '/var/run/mosquitto/mosquitto.pid'
+# ---------------- MariaDB -------------------
+MARIADB_VER:            '10.8'
+MARIADB_ROOT_PW:        ''
+MARIADB_SOCKET:         /var/lib/mysql/mysql.sock
+MARIADB_HOST:           "{{ SERVER_IP }}"
+MARIADB_PORT:           3306
+# ---------------- Adminer -------------------
+ADMINER_VER:            '4.8.1'
+ADMINER_DOWNLOAD_URL:   'https://github.com/vrana/adminer/releases/download/v{{ ADMINER_VER }}'
+ADMINER_MAIN_FILE:      'adminer-{{ ADMINER_VER }}.php'
+ADMINER_PLUGIN_URL:     'https://raw.githubusercontent.com/vrana/adminer/master/plugins'
+# ---------------- MongoDB--------------------
+MONGODB_VER:            4.4
+MONGODB_HOST:           "{{ SERVER_IP }}"
+MONGODB_PORT:           27017
+MONGODB_DATABASE:       'example'
+MONGODB_USERNAME:       ''
+MONGODB_PASSWORD:       ''
+MONGODB_WRITE_CONCERN:  'W1'
+MONGODB_WRITE_TIMEOUT:  -1
+# whether create tables and collections
+NEEDS_CREATE_TABLE:     '/tmp/NEEDS_CREATE_TABLE'
+NEEDS_CREATE_COLL:      '/tmp/NEEDS_CREATE_COLL'
+# ------------------ composer(optional) --------------
+COMPOSER_HOME:          "{{ ansible_user_dir }}/.composer"
+# ------------------ SMTP-Auth -----------------------
+SMTP_MYNETWORKS:        '192.168.56.0/24'
+SMTP_USERNAME:          'smtpuser'
+SMTP_PASSWORD:          'smtppass'
+POSTFIX_myhostname:     'example.com'
+# ------------------ RockMongo-php7 ------------------
+ROCKMONGO_REPO:			'https://github.com/krutpong/rockmongo-php7.git'
+ROCKMONGO_BASE:			'/opt/rockmongo'
+# -------------------- snmpd ------------------------
+# -------------------- keepalived -------------------
+VRRP_SERVER_IP1:    '192.168.56.26'
+VRRP_SERVER_IP2:    '192.168.56.36'
+VRRP_PRIMARY_IP:    '{{ VRRP_SERVER_IP1 }}'
+VRRP_SECONDARY_IP:  '{{ VRRP_SERVER_IP2 }}'
+VRRP_PRIMARY_PRIORITY:      101 # the greater one has higher priority
+VRRP_SECONDARY_PRIORITY:    100
+VRRP_VIP:           '192.168.56.2'
+VRRP_IF:            'eth0'
+VRRP_INTERVAL:          30
+VRRP_SCRIPT_TIMEOUT:    5
+VRRP_RISE:              2   # success this times in a row to active condition
+VRRP_FALL:              2   # failure this times in a row to fault condition
+PING_TARGET:        '8.8.8.8'

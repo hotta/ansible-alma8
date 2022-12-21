@@ -1,0 +1,11 @@
+---
+- name: Put gitlab repo file
+  copy:
+    src: gitlab_gitlab-ee.repo
+    dest: /etc/yum.repos.d/
+  become: yes
+
+- name: Install gitlab
+  dnf:
+    name: gitlab-ee
+  become: yes

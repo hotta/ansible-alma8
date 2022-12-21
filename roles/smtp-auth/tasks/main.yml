@@ -1,0 +1,66 @@
+---
+- name: roles/smtp-auth/tasks/main.yml
+  set_fact: dummy=0
+
+- name: Install packages needed for SMTP-AUTH
+  dnf:
+    name: 
+      - telnet
+      - postfix
+      - mailx
+      - cyrus-sasl
+      - cyrus-sasl-plain
+  become: yes
+
+- name: Change saslauthd settings to use UNIX account for auth
+  template:
+    src: saslauthd
+    dest: /etc/sysconfig/
+  become: yes
+
+- name: Change main.cf for use of SMTP-AUTH
+  template:
+    src: main.cf
+    dest: /etc/postfix/
+  become: yes
+
+- name: Change master.cf for mandatory use of SMTP-AUTH when using submission port
+  template:
+    src: master.cf
+    dest: /etc/postfix/
+  become: yes
+
+- name: reload postfix 
+  systemd:
+    name: postfix
+    state: restarted
+    enabled: yes
+  become: yes
+
+- name: reload saslauthd
+  systemd:
+    name: saslauthd
+    state: restarted
+    enabled: yes
+  become: yes
+
+# https://docs.ansible.com/ansible/latest/reference_appendices/faq.html#how-do-i-generate-encrypted-passwords-for-the-user-module
+
+- name: create a password hash
+  set_fact:
+    HASHED_PASSWORD: "{{ SMTP_PASSWORD | password_hash('sha512', 'mysalt') }}"
+
+- name: create test unix account
+  user:
+    name: "{{ SMTP_USERNAME }}"
+    password: "{{ HASHED_PASSWORD }}"
+  become: yes
+
+- name: Add mail server entry to /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    regexp: "^127.0.0.1 {{ POSTFIX_myhostname }}"
+    line: 127.0.0.1 {{ POSTFIX_myhostname }}
+#   added in 2.5
+#   firstmatch: yes
+  become: yes

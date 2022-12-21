@@ -1,0 +1,4 @@
+---
+- hosts: localhost
+  roles:
+    - { role: smtp-auth,      tags: smtp-auth     }

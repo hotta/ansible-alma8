@@ -1,0 +1,39 @@
+---
+- name: roles/base/tasks/powertools.yml
+  set_fact: dummy=0
+
+- name: Check distribution(rocky)
+  stat:
+    path: /etc/rocky-release
+  register: rocky
+  ignore_errors: yes
+
+- name: Check distribution(almalinux)
+  stat:
+    path: /etc/almalinux-release
+  register: alma
+  ignore_errors: yes
+
+- name: Fail if not Rocky Linux nor Alma Linux
+  fail:
+  when: 
+    - not rocky.stat.exists
+    - not alma.stat.exists
+
+- name: Define powertools source name for rocky
+  set_fact:
+    POWERTOOLS_REPO: Rocky-PowerTools.repo
+  when: rocky.stat.exists
+
+- name: Define powertools source name for Alma
+  set_fact:
+    POWERTOOLS_REPO: almalinux-powertools.repo
+  when: alma.stat.exists
+
+- name: dnf config-manager --set-enabled powertools
+  lineinfile:
+    path: /etc/yum.repos.d/{{ POWERTOOLS_REPO }}
+    regexp: ^enabled
+    line: enabled=1
+    firstmatch: yes
+  become: yes
