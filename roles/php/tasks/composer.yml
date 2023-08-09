@@ -21,12 +21,9 @@
   become: yes
   tags: packagist
 
-- name: Prepare working directory
-  file: 
-    path: "{{ COMPOSER_HOME }}"
-    state: directory
-
-- name: Put composer.json
-  file: 
-    path: "{{ COMPOSER_HOME }}/composer.json"
-    state: touch
+- name: Add vendor/bin to developer's $PATH
+  template:
+    src: composer.sh
+    dest: /etc/profile.d/
+  become: yes
+  tags: composer

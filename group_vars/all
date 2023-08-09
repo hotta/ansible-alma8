@@ -38,7 +38,7 @@ MONGODB_WRITE_TIMEOUT:  -1
 NEEDS_CREATE_TABLE:     '/tmp/NEEDS_CREATE_TABLE'
 NEEDS_CREATE_COLL:      '/tmp/NEEDS_CREATE_COLL'
 # ------------------ composer(optional) --------------
-COMPOSER_HOME:          '{{ ansible_user_dir }}/.composer'
+COMPOSER_BINDIR:        '$HOME/.config/composer/vendor/bin'
 # ------------------ SMTP-Auth -----------------------
 SMTP_MYNETWORKS:        '192.168.56.0/24'
 SMTP_USERNAME:          'smtpuser'
