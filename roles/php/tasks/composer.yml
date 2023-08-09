@@ -1,0 +1,32 @@
+---
+- name: roles/php/tasks/composer.yml
+  meta: noop
+
+- name: Get Composer and deploy
+  get_url: 
+    url:  https://getcomposer.org/composer.phar 
+    dest: /usr/bin/composer 
+    mode: 0755
+    force: no
+    validate_certs: no
+  become: yes
+  tags: composer
+
+- name: Use https://packagist.jp for faster access
+  community.general.composer: 
+    command: config
+    arguments: -g repos.packagist composer https://packagist.jp
+    composer_executable: /usr/bin/composer
+    global_command: yes
+  become: yes
+  tags: packagist
+
+- name: Prepare working directory
+  file: 
+    path: "{{ COMPOSER_HOME }}"
+    state: directory
+
+- name: Put composer.json
+  file: 
+    path: "{{ COMPOSER_HOME }}/composer.json"
+    state: touch

@@ -1,0 +1,57 @@
+---
+- name: roles/php/tasks/main.yml
+  meta: noop
+
+- name: dnf install remi-release
+  dnf:
+    name: "{{ PHP_REMI_REPO_URL }}"
+    validate_certs: no
+    disable_gpg_check: yes
+  become: yes
+
+- name: rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+  rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-remi.el8
+    fingerprint: 6B38 FEA7 231F 87F5 2B9C A9D8 5550 9759 5F11 735A
+  become: yes
+
+- name: Switch PHP version to {{ PHP_STREAM }} 
+  command: dnf module -y switch-to php:{{ PHP_STREAM }}
+  become: yes
+
+- name: install php dependencies
+  dnf:
+    name: 
+      - php
+      - php-pdo
+      - php-pecl-zip
+      - php-gd
+      - php-intl
+      - php-mysqlnd
+      - php-mcrypt
+      - php-pecl-mongodb
+  become: yes
+
+- name: deploy php.ini
+  template:
+    src:    php.ini
+    dest:   /etc/
+  become: yes
+
+- import_tasks: composer.yml
+
+# - name: workaround for missing libncurses.so.5 needed by php-cli
+#   file:
+#     src: /usr/lib64/libncurses.so.6
+#     path: /usr/lib64/libncurses.so.5
+#     state: link
+#   become: yes
+#   tags: wo-php
+# 
+# - name: workaround for missing libtinfo.so.5 needed by php-cli
+#   file:
+#     src: /usr/lib64/libtinfo.so.6
+#     path: /usr/lib64/libtinfo.so.5
+#     state: link
+#   become: yes
+#   tags: wo-php
