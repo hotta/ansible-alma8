@@ -1,8 +1,8 @@
-# Ansible playbooks for building various server / feature 
+# Ansible playbooks to provide a variety of functions. 
 
 ## Minimum requirements
 
-1. using AlmaLinux-8.x
+### using AlmaLinux-8.x
 
 To create AlmaLinux-8 vagrant machine on Windows11:
 
@@ -10,8 +10,9 @@ To create AlmaLinux-8 vagrant machine on Windows11:
 PS> cat Vagrantfile
 Vagrant.configure("2") do |config|
   config.vm.synced_folder ".", "/vagrant", disabled: true
-  config.vm.provider "virtualbox" do |hv|
-    hv.memory = "2048"
+  config.vm.provider "virtualbox" do |vb|
+    vb.cpu = "2"
+    vb.memory = "2048"
   end
   config.vm.define "alma8" do |alma8|
     alma8.vm.box = "generic/alma8"
@@ -21,7 +22,11 @@ end
 PS> vagrant up
 ```
 
-2. We assume vagrant environment
+If you want to run gitlab, the VM needs 6GB+ memory.
+
+### User and permissions to run
+
+It is intended to be run in a vagrant environment.
 
 ```
 $ sudo cat /etc/sudoers.d/vagrant
@@ -42,6 +47,9 @@ $ ansible-galaxy collection install -r requirements.yml
 I recommend you to take a snapshot at this point.
 
 ## Exceution
+
+First, read README(s) at roles/XXX (XXX corresponds XXX.yml) if any, then follow the instructions.
+And then run:
 
 ```
 $ cd ansible-alma8

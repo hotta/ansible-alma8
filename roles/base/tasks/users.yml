@@ -1,7 +1,7 @@
 # Make sure the user running ansible belongs to wheel group 
 ---
 - name: roles/base/tasks/users.yml
-  set_fact: dummy=0
+  assert: { that: true, quiet: true }
 
 - name: Create group wheel if not exists
   group:

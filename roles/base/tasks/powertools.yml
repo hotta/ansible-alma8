@@ -1,6 +1,6 @@
 ---
 - name: roles/base/tasks/powertools.yml
-  set_fact: dummy=0
+  assert: { that: true, quiet: true }
 
 - name: Check distribution(rocky)
   stat:

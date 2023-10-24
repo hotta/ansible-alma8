@@ -1,7 +1,7 @@
 # Set locale
 ---
 - name: roles/base/tasks/locale.yml
-  set_fact: dummy=0
+  assert: { that: true, quiet: true }
 
 - name: Create locale ja_JP.utf8
   command: localedef -f UTF-8 -i ja_JP ja_JP

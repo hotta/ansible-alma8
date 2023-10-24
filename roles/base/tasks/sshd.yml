@@ -1,6 +1,6 @@
 ---
 - name: roles/base/tasks/sshd.yml
-  set_fact: dummy=0
+  assert: { that: true, quiet: true }
 
 - name: Disable reverse dns lookup
   lineinfile:

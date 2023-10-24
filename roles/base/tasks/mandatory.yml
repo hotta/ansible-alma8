@@ -1,6 +1,6 @@
 ---
 - name: roles/base/tasks/mandatory.yml
-  set_fact: dummy=0
+  assert: { that: true, quiet: true }
 
 - name: Install mandatory packages
   dnf: 
