@@ -1,14 +1,95 @@
+---
 # ------------- Common Settings -------------
-_V:                 "{{ ansible_distribution_major_version }}"
-TIME_ZONE:          'Asia/Tokyo'
-SERVER_IP:          '127.0.0.1'
-TIME_SERVER:        'ntp.nict.jp'
-# ----------------- PHP ---------------------
+TIME_ZONE:     'Asia/Tokyo'
+TIME_SERVER:   'ntp.nict.jp'
+ALMA_MAJOR:     8
+#------------------- xrdp ------------------
+XRDP_MAX_BPP:           32
+#------------------- docker ----------------
+DOCKER_ENABLED_FOR_ANYONE:  True  # Ordinary user can access docker daemon.
+# --------------- private CA ------------
+PCA_BASEDIR:        "{{ ansible_user_dir }}/private-ca"
+PCA_FORCE_CREATE:   False         # overwrite existing keys and certs
+PCA_ROOTCA_NAME:    'root-ca'
+PCA_DOMAIN_SUFFIX:  'example.com'
+PCA_COUNTRY_NAME:   'JP'
+PCA_ORG_NAME:       'example COM'
+PCA_COMMON_NAME:    'example CA'
+PCA_ROOTCA_HOME:    "{{ PCA_BASEDIR }}/{{ PCA_ROOTCA_NAME }}"
+PCA_ROOTCA_DEFAULT_DAYS:    10950           # 365 * 30
+PCA_ROOTCA_DEFAULT_CRL_DAYS:    "{{ PCA_ROOTCA_DEFAULT_DAYS }}"
+PCA_ROOTCA_CRL_NUMBER:      10001
+PCA_ROOTCA_KEY:     'root-ca.key'
+PCA_ROOTCA_CSR:     'root-ca.csr'
+PCA_ROOTCA_CERT:    'root-ca.crt'
+PCA_SUBCA_NAME:     'sub-ca'
+PCA_SUBCA_HOME:     "{{ PCA_BASEDIR }}/{{ PCA_SUBCA_NAME }}"
+PCA_SUBCA_DEFAULT_DAYS:     "{{ PCA_ROOTCA_DEFAULT_DAYS }}"
+PCA_SUBCA_DEFAULT_CRL_DAYS: "{{ PCA_ROOTCA_DEFAULT_CRL_DAYS }}"
+PCA_SUBCA_CRL_NUMBER:       10001
+PCA_SUBCA_KEY:      'sub-ca.key'
+PCA_SUBCA_CSR:      'sub-ca.csr'
+PCA_SUBCA_CERT:     'sub-ca.crt'
+PCA_SSL_BITCOUNT:           2048
+PCA_HOSTNAME:       "{{ ansible_facts['nodename'] }}"   # primary host name
+PCA_HOSTNAME2:      'server2'   # secondary host name to create cert for.
+PCA_SERVER_HOME:    "{{ PCA_BASEDIR }}/{{ PCA_DOMAIN_SUFFIX }}"
+# ------------------ 389ds ------------------
+DS389_FORCE_CREATE:     True    # Overwrite current instance every time !!
+DS389_CONFIG:           999999999           # general.defaults
+DS389_SUFFIX:           'dc=example,dc=com' # backend-userroot.suffix
+DS389_INSTANCE_NAME:    'localhost'         # slapd.instance_name
+DS389_SERVICE_NAME:     "dirsrv@{{ DS389_INSTANCE_NAME }}"
+DS389_FQDN:             "{{ PCA_HOSTNAME }}.{{ PCA_DOMAIN_SUFFIX }}"    # general.full_machine_name
+DS389_ROOT_DN:          'cn=Directory Manager'      # slapd.root_dn = BIND DN
+DS389_ROOT_PASSWORD:    'Directory_Manager_Password'    # slapd.root_password
+DS389_SAMPLE_ENTRIES:   'yes'               # backend-userroot.sample_entries
+# ---------------- gitlab ----------------
+GITLAB_VERSION:         '16.3.4'
+GITLAB_GPG_KEY:     'RPM-GPG-KEY-Gitlab-{{ GITLAB_VERSION }}'
+GITLAB_PACKAGE_VER:     'gitlab-ee-16.3.4-ee.0.el9'
+GITLAB_FQDN:        "{{ PCA_HOSTNAME }}.{{ PCA_DOMAIN_SUFFIX }}"
+GITLAB_GLAB_RPM:    'glab_1.33.0_Linux_x86_64.rpm'
+GITLAB_GLAB_URL:    "https://gitlab.com/gitlab-org/cli/-/releases/v1.33.0/downloads/{{ GITLAB_GLAB_RPM }}"
+# ---------------- mariadb ---------------
+MARIADB_VER:            '10.11'
+MARIADB_ROOT_PW:        ''
+MARIADB_SOCKET:         /var/lib/mysql/mysql.sock
+MARIADB_HOST:           "127.0.0.1"
+MARIADB_PORT:           3306
+MARIADB_OPTIONS:        '?autoReconnect=true'
+MARIADB_MAX_ALLOWED_PACKET:   '10M'
+MARIADB_SORT_BUFFER_SIZE:     '10M'
+MARIADB_READ_BUFFER_SIZE:     '256K'
+MARIADB_READ_RND_BUFFER_SIZE: '256K'
+# ------------------ php -----------------
+PHP_VERSION:        '8.2'
 PHP_REMI_REPO_URL:  'https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
-PHP_STREAM:         'remi-8.2'
+PHP_STREAM:         'remi-{{ PHP_VERSION }}'
 PHP_MEMORY_LIMIT:   '1G'
-# ------------------ composer ---------------
-COMPOSER_BINDIR:        '$HOME/.config/composer/vendor/bin'
+PHP_COMPOSER_BIN:   '/usr/local/bin/composer'
+# ---------------- laravel ---------------
+LARAVEL_PROJECT_NAME:   'laravel-example'
+LARAVEL_BASEDIR:        '/opt/{{ LARAVEL_PROJECT_NAME }}'
+LARAVEL_BASEURL:        '/laravel'
+LARAVEL_GROUP_NAME:     'laravel'
+# --------------- terreract --------------
+# fast: "Value for money" in speed vs accuracy, integer models
+# best: best results on Google’s eval data, slower, Float models.
+# legacy: legacy, integer models
+# See also: https://tesseract-ocr.github.io/tessdoc/Data-Files.html
+TERRERACT_MODEL:    'best'  # select one of (best|fast|legacy)
+# --------------- LDAP auth --------------
+AS_LDAP_AUTH_ENABLED:   False
+AS_PROFILE_NAME:    'ldap-auth'
+AS_LDAP_URI:        'ldap://localhost'
+AS_LDAP_BASEDN:     '{{ DS389_SUFFIX }}'
+AS_LDAP_BINDDN:     '{{ DS389_ROOT_DN }}'
+AD_LDAP_BINDPW:     '{{ DS389_ROOT_PASSWORD }}'
+# --------------- PostgreSQL --------------
+PG_VERSION:         15
+PG_REPO_KEY_URL_BASE:    'https://download.postgresql.org/pub/repos/yum/RPM-GPG-KEY-PGDG'
+PG_REPO_URL:    'https://download.postgresql.org/pub/repos/yum/reporpms/EL-{{ ALMA_MAJOR }}-x86_64/pgdg-redhat-repo-latest.noarch.rpm'
 # ------------------ SMTP-Auth -----------------------
 SMTP_MYNETWORKS:        '192.168.56.0/24'
 SMTP_USERNAME:          'smtpuser'

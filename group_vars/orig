@@ -1,0 +1,16 @@
+# ------------- Common Settings -------------
+_V:                 "{{ ansible_distribution_major_version }}"
+TIME_ZONE:          'Asia/Tokyo'
+SERVER_IP:          '127.0.0.1'
+TIME_SERVER:        'ntp.nict.jp'
+# ----------------- PHP ---------------------
+PHP_REMI_REPO_URL:  'https://rpms.remirepo.net/enterprise/remi-release-8.rpm'
+PHP_STREAM:         'remi-8.2'
+PHP_MEMORY_LIMIT:   '1G'
+# ------------------ composer ---------------
+COMPOSER_BINDIR:        '$HOME/.config/composer/vendor/bin'
+# ------------------ SMTP-Auth -----------------------
+SMTP_MYNETWORKS:        '192.168.56.0/24'
+SMTP_USERNAME:          'smtpuser'
+SMTP_PASSWORD:          'smtppass'
+POSTFIX_myhostname:     'example.com'
