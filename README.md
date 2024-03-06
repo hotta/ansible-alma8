@@ -36,6 +36,7 @@ $ sudo cat /etc/sudoers.d/vagrant
 ## Preparation
 
 ```
+$ sudo rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
 $ sudo dnf -y update
 $ sudo dnf -y install git epel-release glibc-langpack-ja
 $ sudo dnf -y install ansible
