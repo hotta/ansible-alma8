@@ -14,3 +14,5 @@ SMTP_MYNETWORKS:        '192.168.56.0/24'
 SMTP_USERNAME:          'smtpuser'
 SMTP_PASSWORD:          'smtppass'
 POSTFIX_myhostname:     'example.com'
+# ------------------ PostgreSQL ----------------------
+PG_VERSION:         15
