@@ -16,3 +16,5 @@ SMTP_PASSWORD:          'smtppass'
 POSTFIX_myhostname:     'example.com'
 # ------------------ PostgreSQL ----------------------
 PG_VERSION:         15
+# ------------------ httpd ---------------------------
+HTTPD_PORT:         80
