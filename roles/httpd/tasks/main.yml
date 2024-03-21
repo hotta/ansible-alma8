@@ -19,9 +19,20 @@
     state: started
   become: true
 
-- name: Open firewall
+- name: Open firewall(httpd service)
   ansible.posix.firewalld:
     service: http
+    permanent: true
+    immediate: true
+    offline: true
+    state: enabled
+  become: True
+  ignore_errors: true
+  when: HTTPD_PORT == 80
+
+- name: Open firewall
+  ansible.posix.firewalld:
+    port: "{{ HTTPD_PORT }}/tcp"
     permanent: true
     immediate: true
     offline: true
@@ -31,3 +42,4 @@
     - "{{ HTTPD_PORT }}"
     - https
   ignore_errors: true
+  when: HTTPD_PORT != 80
