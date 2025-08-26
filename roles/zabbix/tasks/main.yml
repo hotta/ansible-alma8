@@ -1,0 +1,108 @@
+---
+- name: zabbix/tasks/main.yml
+  assert: { that: true, quiet: true }
+
+- name: Import Zabbix GPG key
+  rpm_key:
+    key: https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX-A14FE591
+    state: present
+  become: yes
+
+- name: Install zabbix-release-latest
+  dnf:
+    name: https://repo.zabbix.com/zabbix/7.4/release/alma/8/noarch/zabbix-release-latest-7.4.el8.noarch.rpm
+  become: yes
+
+- name: dnf clean all
+  command: dnf clean all
+  become: yes
+
+- name: swith php version to 8.2
+  command: dnf module switch-to php:8.2 -y
+  become: yes
+
+- name: Install zabbix family
+  dnf:
+    name:
+      - zabbix-server-mysql
+      - zabbix-web-mysql
+      - zabbix-apache-conf
+      - zabbix-sql-scripts
+      - zabbix-selinux-policy
+      - zabbix-agent
+  become: yes 
+
+- name: Create DB
+  mysql_db:
+    name: "{{ ZABBIX_DB }}"
+    encoding: utf8mb4
+    collation: utf8mb4_bin
+  become: yes
+
+- name: Create User
+  mysql_user:
+    append_privs: yes
+    name: "{{ ZABBIX_DB_USER }}"
+    password: "{{ ZABBIX_DB_PASS }}"
+    host: localhost
+    priv: '{{ ZABBIX_DB }}.*:ALL'
+    column_case_sensitive: true
+  become: yes
+
+- name: Check if initial schema has already been read.
+  mysql_query:
+    login_db: "{{ ZABBIX_DB }}"
+    query: SELECT * FROM users
+  become: yes
+  register: sql
+  ignore_errors: yes
+
+# - debug: var=sql
+
+- name: Enable stored function registration
+  shell: echo set global log_bin_trust_function_creators = 1 | sudo mysql
+  when: sql.failed
+
+- name: Import initial schema
+  shell: zcat /usr/share/zabbix/sql-scripts/mysql/server.sql.gz | sudo mysql --default-character-set=utf8mb4 {{ ZABBIX_DB }}
+  when: sql.failed
+
+- name: Disable stored function registration
+  shell: echo set global log_bin_trust_function_creators = 0 | sudo mysql
+
+- name: Deploy zabbix_server.conf
+  template:
+    src: zabbix_server.conf
+    dest: /etc/zabbix
+    mode: 0600
+  become: yes
+
+- name: Start zabbix server
+  systemd:
+    name: zabbix-server
+    enabled: yes
+    state: restarted
+  become: yes
+
+- name: Start zabbix agent
+  systemd:
+    name: zabbix-agent
+    enabled: yes
+    state: restarted
+  become: yes
+
+- name: Start php-fpm
+  systemd:
+    name: php-fpm
+    enabled: yes
+    state: restarted
+  become: yes
+
+- name: Open firewall
+  firewalld:
+    service: zabbix-server
+    immediate: yes
+    permanent: yes
+    state: enabled
+  become: yes
+
