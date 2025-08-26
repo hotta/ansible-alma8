@@ -18,3 +18,9 @@ POSTFIX_myhostname:     'example.com'
 PG_VERSION:         15
 # ------------------ httpd ---------------------------
 HTTPD_PORT:         80
+# ----------------------------- MariaDB ------------------------------
+MARIADB_VER:          '11.8'
+MARIADB_ROOT_PW:       'p@ssw0rd'
+MARIADB_PORT:         3306
+MARIADB_SOCKET:       /var/lib/mysql/mysql.sock
+
