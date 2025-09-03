@@ -36,7 +36,6 @@ $ sudo cat /etc/sudoers.d/vagrant
 ## Preparation
 
 ```
-$ sudo rpm --import https://repo.almalinux.org/almalinux/RPM-GPG-KEY-AlmaLinux
 $ sudo dnf -y update
 $ sudo dnf -y install git epel-release glibc-langpack-ja
 $ sudo dnf -y install ansible
@@ -45,14 +44,11 @@ $ cd ansible-alma8
 $ ansible-galaxy collection install -r requirements.yml
 ```
 
-I recommend you to take a snapshot at this point.
-
 ## Exceution
 
 First, read README(s) at roles/XXX (XXX corresponds XXX.yml) if any, then follow the instructions.
 And then run:
 
 ```
-$ cd ansible-alma8
 $ ansible-playbook jobs/XXX.yml
 ```
