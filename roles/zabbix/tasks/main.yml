@@ -11,6 +11,7 @@
 - name: Install zabbix-release-latest
   dnf:
     name: https://repo.zabbix.com/zabbix/7.4/release/alma/8/noarch/zabbix-release-latest-7.4.el8.noarch.rpm
+    disable_gpg_check: yes
   become: yes
 
 - name: dnf clean all
