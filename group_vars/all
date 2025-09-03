@@ -27,3 +27,8 @@ MARIADB_SOCKET:       /var/lib/mysql/mysql.sock
 ZABBIX_DB:            'zabbix'
 ZABBIX_DB_USER:       'zabbix'
 ZABBIX_DB_PASS:       'zabbix'
+# ------------------------------ SNMP --------------------------------
+SNMP_MANAGER_CIDR:  '192.168.57.0/24'
+SNMP_COMMUNITY:     'public'
+SNMPTT_LOG_FILE:    '/var/log/snmptt/snmptt.log'
+

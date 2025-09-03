@@ -51,3 +51,11 @@
     state: reloaded
     enabled: yes
   become: yes
+
+- name: restart snmpd
+  systemd:
+    name: snmpd
+    state: restarted
+    enabled: yes
+  become: yes
+
