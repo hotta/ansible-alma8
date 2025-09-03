@@ -1,0 +1,37 @@
+---
+- name: roles/snmp/tasks/snmptt.yml
+  assert: { that: true, quiet: true }
+
+- name: Install dependencies
+  dnf:
+    name:
+      - perl-Sys-Syslog
+      - net-snmp-perl
+  become: yes
+
+- name: Download snmptt from CentOS-7's repo
+  get_url: 
+    url: http://archives.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/s/snmptt-1.4.2-1.el7.noarch.rpm
+    dest: "{{ ansible_user_dir }}"
+
+- name: Install snmptt
+  dnf:
+    name: "{{ ansible_user_dir }}/snmptt-1.4.2-1.el7.noarch.rpm"
+    disable_gpg_check: yes
+  become: yes
+
+- name: Deploy snmptt.ini and snmptt.conf
+  template:
+    src: "{{ item }}"
+    dest: /etc/snmp/
+  become: yes
+  loop:
+    - snmptt.ini
+    - snmptt.conf
+
+- name: Start snmptt(SNMP Trap Translator) service
+  systemd:
+    name: snmptt
+    state: restarted
+    enabled: yes
+  become: yes
