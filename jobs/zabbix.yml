@@ -1,4 +1,7 @@
 ---
 - hosts: localhost
   roles:
-    - { role: zabbix,         tags: mariadb        }
+    - { role: snmp,           tags: snmp          }
+    - { role: snmptt,         tags: snmptt        }
+    - { role: mariadb,        tags: mariadb       }
+    - { role: zabbix,         tags: zabbix        }
