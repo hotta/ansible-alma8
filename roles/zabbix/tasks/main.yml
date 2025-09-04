@@ -99,6 +99,13 @@
     state: restarted
   become: yes
 
+- name: Restart httpd
+  systemd:
+    name: httpd
+    enabled: yes
+    state: restarted
+  become: yes
+
 - name: Open firewall
   firewalld:
     service: zabbix-server
