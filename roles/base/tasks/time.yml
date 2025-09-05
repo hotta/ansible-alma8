@@ -5,6 +5,7 @@
 
 - name: Set time zone (ansible 2.2 or later)
   timezone:
+    hwclock: UTC
     name: "{{ TIME_ZONE }}"
   become: yes
 
@@ -21,3 +22,9 @@
     state: restarted
   become: yes
   when: ansible_virtualization_type == "virtualbox"
+
+- name: restart rsyslog
+  systemd:
+    name: rsyslog
+    state: restarted
+  become: yes
