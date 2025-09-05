@@ -41,7 +41,10 @@
   firewalld:
     zone: public
     permanent: yes
-    rich_rule: 'rule family=ipv4 source address={{ SNMP_MANAGER_CIDR }} service name=snmp accept'
+    rich_rule: 'rule family=ipv4 source address={{ SNMP_MANAGER_CIDR }} service name={{ item }} accept'
     state: enabled
   become: yes
   notify: reload firewalld
+  loop:
+    - snmp
+    - snmptrap
