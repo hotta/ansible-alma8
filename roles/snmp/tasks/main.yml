@@ -30,6 +30,12 @@
     dest: /etc/snmp/
   become: yes
 
+- name: Set snmptrapd option file
+  template:
+    src: snmptrapd
+    dest: /etc/sysconfig/
+  become: yes
+
 - name: Make sure snmptrapd is running
   systemd:
     name: snmptrapd
