@@ -12,6 +12,10 @@
     --mariadb-server-version=mariadb-{{ MARIADB_VER }}
   become: yes
 
+- name: Disable mariadb-maxscale
+  command: sed -i '11,19d' /etc/yum.repos.d/mariadb.repo
+  become: yes
+
 - name: Install mariadb packages
   dnf: 
     name:
