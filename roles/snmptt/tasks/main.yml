@@ -7,31 +7,90 @@
     name:
       - perl-Sys-Syslog
       - net-snmp-perl
+      - perl-Config-IniFiles
+      - perl-Crypt-DES
+      - perl-Digest-HMAC
+      - perl-Digest-SHA
+      - perl-Digest-SHA1
+      - perl-IO-stringy
+      - perl-Net-SNMP
+      - perl-SelfLoader
+      - perl-Socket6
+      - perl-Text-Balanced
+      - perl-Net-IP
   become: yes
 
-- name: Download snmptt from CentOS-7's repo
-  get_url: 
-    url: http://archives.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/s/snmptt-1.4.2-1.el7.noarch.rpm
-    dest: "{{ ansible_user_dir }}"
-
-- name: Install snmptt
-  dnf:
-    name: "{{ ansible_user_dir }}/snmptt-1.4.2-1.el7.noarch.rpm"
-    disable_gpg_check: yes
+- name: Deploy snmptt
+  template: 
+    src: snmptt_1.5/snmptt
+    dest: /usr/sbin/
+    mode: 0755
   become: yes
 
-- name: Deploy snmptt.ini and snmptt.conf
-  template:
-    src: "{{ item }}"
-    dest: /etc/snmp/
+- name: Create user
+  user:
+    name: snmptt
+    system: true
+  become: yes
+
+- name: Prepare directory
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: snmptt
+    group: snmptt
+    mode: 0755
   become: yes
   loop:
-    - snmptt.ini
-    - snmptt.conf
+    - /etc/snmptt
+    - /var/log/snmptt
+    - /var/spool/snmptt
+    
+- name: Deploy snmptt.ini
+  template:
+    src: snmptt.ini
+    dest: /etc/snmptt/
+    owner: snmptt
+    group: snmptt
+  become: yes
 
+- name: Deploy snmptt.conf
+  template:
+    src: snmptt.conf
+    dest: /etc/snmptt/
+    owner: snmptt
+    group: snmptt
+  become: yes
+
+- name: Deploy startup script
+  template:
+    src: snmptt_1.5/snmptt.service
+    dest: /usr/lib/systemd/system/
+    mode: 0755
+  become: yes
+  
 - name: Start snmptt(SNMP Trap Translator) service
   systemd:
     name: snmptt
     state: restarted
     enabled: yes
+  become: yes
+
+- name: Deploy logrotate
+  template:
+    src: snmptt_1.5/snmptt.logrotate
+    dest: /etc/logrotate.d/snmptt
+  become: yes
+
+- name: Prepare share directory
+  file:
+    path: /usr/share/snmptt
+    state: directory
+  become: yes
+
+- name: Deploy handeler
+  template:
+    src: snmptt_1.5/snmptthandler-embedded
+    dest: /usr/share/snmptt/
+    mode: 0755
   become: yes

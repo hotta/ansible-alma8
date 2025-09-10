@@ -1,7 +1,7 @@
 #
 # SNMPTT v1.5 Configuration File
 #
-# Linux / Unix
+# Windows NT
 #
 
 [General]
@@ -13,7 +13,7 @@ snmptt_system_name =
 # standalone: snmptt called from snmptrapd.conf
 # daemon: snmptrapd.conf calls snmptthandler
 # Ignored by Windows.  See documentation
-mode = daemon
+mode = standalone
 
 # Set to 1 to allow multiple trap definitions to be executed for the same trap.
 # Set to 0 to have it stop after the first match.
@@ -39,7 +39,7 @@ dns_enable = 0
 
 # Set to 0 to enable the use of FQDN (Fully Qualified Domain Names).  If a host name is
 # passed to SNMPTT that contains a domain name, it will not be altered in any way by
-# SNMPTT.  This also affects resolve_value_ip_addresses.
+# SNMPTT.  This also affects translate_value_hostnames.
 # Set to 1 to have SNMPTT strip the domain name from the host name passed to it.  For 
 # example, server01.domain.com would be changed to server01
 # Set to 2 to have SNMPTT strip the domain name from the host name passed to it
@@ -56,8 +56,8 @@ END
 
 # Configures how IP addresses contained in the VALUE of the variable bindings are handled.
 # This only applies to the values for $n, $+n, $-n, $vn, $+*, $-*.
-# Set to 0 to disable resolving ip address to host names
-# Set to 1 to enable resolving ip address to host names
+# Set to 0 to disable resolving ip addresses to host names
+# Set to 1 to enable resolving ip addresses to host names
 # Note: net_snmp_perl_enable *must* be enabled.  The strip_domain settings influence the
 # format of the resolved host name.  DNS must be enabled (dns_enable)
 resolve_value_ip_addresses = 0
@@ -68,7 +68,7 @@ resolve_value_ip_addresses = 0
 # Set to 0 to disable the use of the Perl module from the UCD-SNMP / NET-SNMP package.
 # Note: Enabling this with stand-alone mode can cause SNMPTT to run very slowly due to
 #       the loading of the MIBS at startup.
-net_snmp_perl_enable = 1
+net_snmp_perl_enable = 0
 
 # Set to 1 to enable caching of OID and ENUM translations when net_snmp_perl_enable is 
 # enabled.  Enabling this should result in faster translations.
@@ -78,7 +78,7 @@ net_snmp_perl_enable = 1
 net_snmp_perl_cache_enable = 1
 
 # This sets the best_guess parameter used by the UCD-SNMP / NET-SNMP Perl module for 
-# translating symbolic names to OIDs and vice versa.
+# translating symbolic nams to OIDs and vice versa.
 # For UCD-SNMP, and Net-SNMP 5.0.8 and previous versions, set this value to 0.
 # For Net-SNMP 5.0.9, or any Net-SNMP with patch 722075 applied, set this value to 2.
 # A value of 2 is equivalent to -IR on Net-SNMP command line utilities.
@@ -87,8 +87,8 @@ net_snmp_perl_cache_enable = 1
 # all possibilities to be translated.  See the FAQ section in the README for more info
 net_snmp_perl_best_guess = 2
 
-# Configures how the OID of the received trap is handled when outputting to a log file /
-# database.  It does NOT apply to the $O variable.
+# This parameter configures how the OID of the received trap is handled when outputting to 
+# a log file / database.  It does NOT apply to the $O variable.
 # Set to 0 to use the default of numerical OID
 # Set to 1 to translate the trap OID to short text (symbolic form) (eg: linkUp)
 # Set to 2 to translate the trap OID to short text with module name (eg: IF-MIB::linkUp)
@@ -169,8 +169,8 @@ allow_unsafe_regex = 0
 # Set to 0 to disable
 remove_backslash_from_quotes = 0
 
-# Set to 1 to have NODES files loaded each time a trap is processed.
-# Set to 0 to have all NODES files loaded when the snmptt.conf files are loaded.
+# Set to 1 to have NODES files loaded each time a trap is processed
+# Set to 0 to have all NODES files loaded when the snmptt.conf files are loaded
 # If NODES files are used (files that contain lists of NODES), then setting to 1
 # will cause the list to be loaded each time an EVENT is processed that uses
 # NODES files.  This will allow the NODES file to be modified while SNMPTT is 
@@ -228,34 +228,16 @@ threads_max = 10
 # (unknown_trap_log_file).  Defaults to localtime().  For SQL, see 
 # date_time_format_sql.
 # Example:  %a %b %e %Y %H:%M:%S
-date_time_format = %Y/%m/%d %H:%M:%S
-
-# Set to 1 to enable IPv6 support
-ipv6_enable = 1
+#date_time_format = 
 
 [DaemonMode]
 # Set to 1 to have snmptt fork to the background when run in daemon mode
 # Ignored by Windows.  See documentation
 daemon_fork = 1
 
-# Set to the numerical user id (eg: 500) or textual user id (eg: snmptt)
-# that snmptt should change to when running in daemon mode.  Leave blank
-# to disable.  The user used should have read/write access to all log
-# files, the spool folder, and read access to the configuration files.
-# Only use this if you are starting snmptt as root.
-# A second (child) process will be started as the daemon_uid user so
-# there will be two snmptt processes running.  The first process will 
-# continue to run as the user that ran snmptt (root), waiting for the
-# child to quit.  After the child quits, the parent process will remove 
-# the snmptt.pid file and exit.
-daemon_uid = snmptt
-
-# Complete path of file to store process ID when running in daemon mode.
-pid_file = /var/run/snmptt.pid
-
-# Directory to read received traps from.  Ex: /var/spool/snmptt/
-# Don't forget the trailing slash!
-spool_directory = /var/spool/snmptt/
+# Directory to read received traps from.  Ex: c:\\snmp\\snmptt\\spool\\ 
+# Don't forget the trailing slashes!
+spool_directory = c:\\snmp\\spool\\
 
 # Amount of time in seconds to sleep between processing spool files.  Value is
 # rounded to a full second unless the value is less than 1.  Note: If value is
@@ -300,36 +282,36 @@ stdout_enable = 0
 # location
 log_enable = 1
 
-# Custom format for logging to STDOUT and text log.  Defaults to:
+# Custom format for logging to STDOUT, text log and Event Log.  Defaults to:
 # $O $s "$c" $A - $Fz which translates to:
 # trap-oid severity category hostname - translated-trap
 log_format = 
 
-# Log file location.  The COMPLETE path and filename.  Ex: '/var/log/snmptt/snmptt.log'
-log_file = {{ SNMPTT_LOG_FILE }}
+# Log file location.  The COMPLETE path and filename.  Ex: 'c:\\snmp\\log\\snmptt.log'
+log_file = c:\\snmp\\log\\snmptt.log
 
 # Set to 1 to enable text logging of *SNMPTT system errors*.  Make sure you 
 # specify a log_system_file location
 log_system_enable = 0
 
 # Log file location.  The COMPLETE path and filename.  
-# Ex: '/var/log/snmptt/snmpttsystem.log'
-log_system_file = /var/log/snmptt/snmpttsystem.log
+# Ex: 'c:\\snmp\\log\\snmpttsystem.log'
+log_system_file = c:\\snmp\\log\\snmpttsystem.log
 
 # Set to 1 to enable logging of unknown traps.  This should normally be left off
 # as the file could grow large quickly.  Used primarily for troubleshooting.  If
 # you have defined a trap in snmptt.conf, but it is not executing, enable this to
 # see if it is being considered an unknown trap due to an incorrect entry or 
 # simply missing from the snmptt.conf file.
-# Unknown traps can be logged either as a text file, a SQL table or both.
+# Unknown traps can be logged either a text file, a SQL table or both.
 # See SQL section to define a SQL table to log unknown traps to.
 unknown_trap_log_enable = 0
 
 # Unknown trap log file location.  The COMPLETE path and filename.  
-# Ex: '/var/log/snmptt/snmpttunknown.log'
+# Ex: 'c:\\snmp\\log\\snmpttunknown.log'
 # Leave blank to disable logging to text file if logging to SQL is enabled
 # for unknown traps
-unknown_trap_log_file = /var/log/snmptt/snmpttunknown.log
+unknown_trap_log_file = c:\\snmp\\log\\snmpttunknown.log
 
 # Set to 1 to consider traps as skipped instead of unknown if they did not
 # match an snmptt.conf entry due to NODES or MATCH.  Defaults to 0.
@@ -348,109 +330,33 @@ unknown_trap_nodes_match_mode = 0
 # 24 hours = 86400
 statistics_interval = 0
 
-##########################################################
-# Syslog - common
+# Set to 1 to enable logging of *TRAPS* to the event log.
+# All traps will be recorded to the Application log
+eventlog_enable = 0
 
-# Set to 0 to use the Sys::Syslog module which allows for logging to the local 
-# syslog via Unix sockets.  Remote syslog servers are not supported.  On most
-# systems if your syslog daemon is stopped, the log entries will be spooled
-# and should appear in the syslog log after the daemon is restarted.
-# Set to 1 to use the Log::Syslog::Fast module for logging to remote systems
-# (or localhost) over UDP or TCP using RFC3164 or the newer RFC5424 which
-# supports the 'APP-NAME' field.  Also see the log_format setting.  If the
-# remote syslog server is not accessible, you could lose traps.  If you want to
-# forward syslog messages to a central location, the recommended configuration
-# is to use the Sys:Syslog module (syslog_module = 0) and then configure
-# rsyslog or syslog-ng to forward the log messages.
-# Sys::Syslog is recommended.
-syslog_module = 0
-
-# Remote syslog server hostname or IP address when. Requires syslog_module = 1.
-syslog_remote_dest = 127.0.0.1
-
-# Remote syslog server UDP/TCP port.  Requires syslog_module = 1.
-syslog_remote_port = 514
-
-# Remote syslog server protocol to use (UDP or TCP). Requires syslog_module = 1.
-# Note:  If TCP is selected and the remote server is not responding, this will
-#        block snmptt from processing additional traps until the connection
-#        times out.
-syslog_remote_proto = UDP
-
-# Remote syslog format.  Set to 0 for LOG_RFC3164 (default), 1 for
-# LOG_RFC3164_LOCAL (hostname is not sent) or 2 for LOG_RFC5424.
-# Requires syslog_module = 1.
-syslog_rfc_format = 0
-
-# Syslog - common
-##########################################################
-# Syslog - traps
-
-# Set to 1 to enable logging of *TRAPS* to syslog.  If you do not have the 
-# Sys::Syslog or Log::Syslog::Fast modules then disable this.  
-# Windows users should disable this.
-syslog_enable = 1
-
-# Remote syslog APP-NAME name when using LOG_RFC5424.
-syslog_app = snmptt
-
-# Custom format for text logging and syslog.  Defaults to: $O $s "$c" $A - $Fz
-# which translates to: trap-oid severity category hostname - translated-trap
-# Example for syslog RFC5424 formatted key pairs with an SD-ID of 
-# SNMPTT@enterprise#:
-# [SNMPTT@$j Trap="$O" Severity="$s" Category="$c" Hostname="$A"] $Fz
-# See section 6.3.2 of RFC5424 for details on the SD-ID.  32473 is an example
-# enterpriseId which you may need to change in your environment
-syslog_format = 
-
-# Syslog facility to use for logging of *TRAPS*.  For example: 'local0'
-syslog_facility = local0
-
-# Set the syslog level for *TRAPS* based on the severity level of the trap
-# as defined in the snmptt.conf file.  Values must be one per line between 
-# the syslog_level_* and END lines, and are not case sensitive.  For example:
+# Set the event log type for *TRAPS* based on the severity level of the trap
+# as defined in the snmptt.conf file.  Values must be one per line between
+# the eventlog_type_* and END lines, and are not case sensitive.  For example:
 #   Warning
 #   Critical
 # Duplicate definitions will use the definition with the higher severity.
-syslog_level_debug = <<END
+eventlog_type_information = <<END
 END
-syslog_level_info = <<END
+eventlog_type_warning = <<END
 END
-syslog_level_notice = <<END
-END
-syslog_level_warning = <<END
-END
-syslog_level_err = <<END
-END
-syslog_level_crit = <<END
-END
-syslog_level_alert = <<END
+eventlog_type_error = <<END
 END
 
-# Syslog default level to use for logging of *TRAPS*.  For example: warning
-# Valid values: emerg, alert, crit, err, warning, notice, info, debug 
-syslog_level = warning
+# Set the default event log type for *TRAPS*.  Valid values:
+# INFORMATION, WARNING or ERROR.  
+#eventlog_type = INFORMATION
+eventlog_type = WARNING
+#eventlog_type = ERROR
 
-# Syslog
-##########################################################
-# Syslog system
-
-# Set to 1 to enable logging of *SNMPTT system errors* to syslog.  If you do not have the 
-# Sys::Syslog module then disable this.  Windows users should disable this.
-syslog_system_enable = 1
-
-# Remote syslog APP-NAME name when using LOG_RFC5424.
-syslog_system_app = snmptt-sys
-
-# Syslog facility to use for logging of *SNMPTT system errors*.  For example: 'local0'
-syslog_system_facility = local0
-
-# Syslog level to use for logging of *SNMPTT system errors*..  For example: 'warning'
-# Valid values: emerg, alert, crit, err, warning, notice, info, debug 
-syslog_system_level = warning
-
-# Syslog system
-##########################################################
+# Set to 1 to enable logging of *SNMPTT system errors* to the event log.
+# All errors will be recorded to the Application log.  The event type used
+# will depend on the severity of the problem and is hard coded into SNMPTT.
+eventlog_system_enable = 0
 
 [SQL]
 # Determines if the enterprise column contains the numeric OID or symbolic OID
@@ -559,6 +465,9 @@ postgresql_dbi_port = 5432
 # PostgreSQL: Database to use
 postgresql_dbi_database = snmptt
 
+# PostgreSQL: Table to use
+postgresql_dbi_table = snmptt
+
 # PostgreSQL: Table to use for unknown traps
 # Leave blank to disable logging of unknown traps to PostgreSQL
 # Note: unknown_trap_log_enable must be enabled.
@@ -568,9 +477,6 @@ postgresql_dbi_table_unknown = snmptt_unknown
 # Note: statistics_interval must be set.  See also stat_time_format_sql.
 #postgresql_dbi_table_statistics = snmptt_statistics
 postgresql_dbi_table_statistics = 
-
-# PostgreSQL: Table to use
-postgresql_dbi_table = snmptt
 
 # PostgreSQL: Username to use
 postgresql_dbi_username = snmpttuser
@@ -584,7 +490,7 @@ postgresql_dbi_password = password
 # re-create the database connection.
 # Set to 0 to disable
 # Set to 1 to enable
-# Note:  This has no effect on postgresqll_ping_interval.
+# Note:  This has no effect on postgresql_ping_interval.
 postgresql_ping_on_insert = 1
 
 # PostgreSQL: How often in seconds the database should be 'pinged' to ensure the
@@ -614,16 +520,15 @@ dbd_odbc_table = snmptt
 dbd_odbc_table_unknown = snmptt_unknown
 
 # DBD:ODBC: Table to use for statistics
-# Note: statistics_interval must be set.  See also stat_time_format_sql.
+# Note: statistics_interval must be set.
 #dbd_odbc_table_statistics = snmptt_statistics
 dbd_odbc_table_statistics = 
 
 # DBD:ODBC: Username to use
 dbd_odbc_username = snmptt
 
-# DBD:DBC:: Password to use
+# DBD:ODBC:: Password to use
 dbd_odbc_password = password
-
 
 # DBD:ODBC: Whether or not to 'ping' the database before attempting an INSERT
 # to ensure the connection is still valid.  If *any* error is generate by 
@@ -644,6 +549,32 @@ dbd_odbc_ping_on_insert = 1
 # 15 minutes = 900
 # 30 minutes = 1800
 dbd_odbc_ping_interval = 300
+
+# Win32 ODBC: Set to 1 to enable logging to a database via ODBC on Windows.  
+# This requires Win32::ODBC (Windows only)
+sql_win32_odbc_enable = 0
+
+# WinODBC: Database to use
+sql_win32_odbc_dsn = snmptt
+
+# WinODBC: Table to use
+sql_win32_odbc_table = snmptt
+
+# WinODBC: Table to use for unknown traps
+# Leave blank to disable logging of unknown traps to DBD:ODBC
+# Note: unknown_trap_log_enable must be enabled.
+sql_win32_odbc_table_unknown = snmptt_unknown
+
+# WinODBC: Table to use for statistics
+# Note: statistics_interval must be set.
+#sql_win32_odbc_table_statistics = snmptt_statistics
+sql_win32_odbc_table_statistics = 
+
+# WinODBC: Username to use
+sql_win32_odbc_username = snmptt
+
+# WinODBC:: Password to use
+sql_win32_odbc_password = password
 
 # The date time format for the traptime column in SQL.  Defaults to 
 # localtime().  When a date/time field is used in SQL, this should
@@ -687,8 +618,8 @@ unknown_trap_exec_format =
 
 # Set to 1 to escape wildards (* and ?) in EXEC, PREEXEC and the unknown_trap_exec
 # commands.  Enable this to prevent the shell from expanding the wildcard 
-# characters.  The default is 1.
-exec_escape = 1
+# characters.  The default is 0 for Windows as it is not usually needed.
+exec_escape = 0
 
 [Debugging]
 # 0 - do not output messages
@@ -696,23 +627,23 @@ exec_escape = 1
 # 2 - out all messages
 DEBUGGING = 0
 
-# Debugging file - SNMPTT
+# Debugging file
 # Location of debugging output file.  Leave blank to default to STDOUT (good for
 # standalone mode, or daemon mode without forking)
 DEBUGGING_FILE = 
-# DEBUGGING_FILE = /var/log/snmptt/snmptt.debug
+# DEBUGGING_FILE = c:\\snmp\\log\\snmptt.debug
 
 # Debugging file - SNMPTTHANDLER
 # Location of debugging output file.  Leave blank to default to STDOUT
 DEBUGGING_FILE_HANDLER = 
-# DEBUGGING_FILE_HANDLER = /var/log/snmptt/snmptthandler.debug
+# DEBUGGING_FILE_HANDLER = c:\\snmp\\log\\snmptthandler.debug
 
 [TrapFiles]
 # A list of snmptt.conf files (this is NOT the snmptrapd.conf file).
 # The COMPLETE path and filename.  Wildcards can also be used.
 # Ex:
-# /etc/snmptt/snmptt.conf
-# /etc/snmptt/snmptt.*.conf
+# c:\\snmp\\snmptt.conf
+# c:\\snmp\\snmptt.*.conf
 snmptt_conf_files = <<END
-/etc/snmptt/snmptt.conf
+c:\\snmp\\snmptt.conf
 END
